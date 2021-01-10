@@ -1,7 +1,7 @@
 import sys
 import time
 import pika
-from pika.exceptions import AMQPConnectionError, StreamLostError, ConnectionClosedByBroker
+from pika.exceptions import AMQPConnectionError
 from rabbitmq.channel import Channel
 from utils.logger import logger
 
@@ -42,7 +42,8 @@ class Client(metaclass=SingletonMeta):
                                                             port=self._port,
                                                             virtual_host=self._virtual_host,
                                                             credentials=self._credentials)
-        self.connection = self.connect()
+        self.connection = None
+        self.connect()
 
     def connect(self) -> pika.connection:
         """
@@ -50,20 +51,20 @@ class Client(metaclass=SingletonMeta):
         Reconnect number of attempts if disconnected, otherwise exit
         :return: RabbitMQ connection
         """
-        attempt = 0
-        while attempt < RECONNECT_ATTEMPTS:
+        for attempt in range(RECONNECT_ATTEMPTS):
 
             try:
-                logger.info(f'RabbitMQ. Connecting to {self._host}:{self._port}')
-                return pika.BlockingConnection(self._connection_params)
+                logger.info(f'Connecting to {self._host}:{self._port}')
+                self.connection = pika.BlockingConnection(self._connection_params)
+                logger.info(f'Connected')
+                return
 
             except AMQPConnectionError:
-                attempt += 1
-                logger.warning(f'RabbitMQ. Unable to connect, reconnect attempt: {attempt}')
+                logger.warning(f'Unable to connect, reconnect attempt: {attempt}')
                 time.sleep(RECONNECT_PERIOD)
 
         # Handle exit from program
-        logger.critical('RabbitMQ. Unable to connect, signal to exit')
+        logger.critical('Unable to connect, signal to exit')
         self.connection.close()
         sys.exit()
 
@@ -72,9 +73,5 @@ class Client(metaclass=SingletonMeta):
         Get channel from current connection
         :return: RabbitMQ channel
         """
-        try:
-            return Channel(self)
-
-        except (StreamLostError, ConnectionClosedByBroker) as e:
-            logger.warning(e)
-            self.connect()
+        logger.info('Creating channel')
+        return Channel(self)

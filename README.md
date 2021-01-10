@@ -10,5 +10,5 @@ docker build \
 --tag sbs-receiver:1.0 \
 --file docker/sbs-receiver.dockerfile .
 
-docker-compose -d -f docker/docker-compose.yml up
+docker-compose -f docker/docker-compose.yml up -d
 ```

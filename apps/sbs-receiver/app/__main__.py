@@ -5,6 +5,8 @@ from rabbitmq.client import Client
 from receiver import Receiver
 
 
+# TODO: Add delay support in docker-compose
+
 def main():
 
     # dump1090 environment
@@ -20,20 +22,19 @@ def main():
     rabbitmq_exchange_name = os.environ['RABBITMQ_EXCHANGE_NAME']
     rabbitmq_exchange_type = os.environ['RABBITMQ_EXCHANGE_TYPE']
 
+    # Set RTL-SDR receiver
     receiver = Receiver(dump1090_host, dump1090_port)
 
+    # Set RabbitMQ producer
     rabbitmq_client = Client(rabbitmq_host, rabbitmq_port, rabbitmq_vhost, rabbitmq_user, rabbitmq_pass)
     channel = rabbitmq_client.get_channel()
     channel.exchange_declare(rabbitmq_exchange_name, rabbitmq_exchange_type)
 
-    try:
-        for message in receiver.get_message():
-            serialized_message = json.dumps(message)
-            logger.info(serialized_message)
-            channel.publish(serialized_message, rabbitmq_exchange_name)
-
-    except KeyboardInterrupt:
-        logger.warning('Keyboard interrupt')
+    # Get messages from receiver and send to broker
+    for message in receiver.get_message():
+        logger.info(f"Received message from aircraft hex id: {message['hex_ident']}")
+        serialized_message = json.dumps(message)
+        channel.publish(serialized_message, rabbitmq_exchange_name)
 
 
 if __name__ == '__main__':
