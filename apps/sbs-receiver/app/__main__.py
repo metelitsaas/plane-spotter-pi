@@ -1,7 +1,8 @@
 import os
 import json
+import pika
 from utils.logger import logger
-from rabbitmq.client import Client
+from utils.rabbit_client import RabbitClient
 from receiver import Receiver
 
 
@@ -26,15 +27,23 @@ def main():
     receiver = Receiver(dump1090_host, dump1090_port)
 
     # Set RabbitMQ producer
-    rabbitmq_client = Client(rabbitmq_host, rabbitmq_port, rabbitmq_vhost, rabbitmq_user, rabbitmq_pass)
-    channel = rabbitmq_client.get_channel()
-    channel.exchange_declare(rabbitmq_exchange_name, rabbitmq_exchange_type)
+    rabbitmq_client = RabbitClient(rabbitmq_host, rabbitmq_port, rabbitmq_vhost, rabbitmq_user, rabbitmq_pass)
+    rabbitmq_client.channel.exchange_declare(
+        exchange=rabbitmq_exchange_name,
+        exchange_type=rabbitmq_exchange_type,
+        durable=True
+    )
 
     # Get messages from receiver and send to broker
     for message in receiver.get_message():
         logger.info(f"Received message from aircraft hex id: {message['hex_ident']}")
         serialized_message = json.dumps(message)
-        channel.publish(serialized_message, rabbitmq_exchange_name)
+        rabbitmq_client.channel.basic_publish(
+            exchange=rabbitmq_exchange_name,
+            routing_key='',
+            body=serialized_message,
+            properties=pika.BasicProperties(delivery_mode=2,)
+        )
 
 
 if __name__ == '__main__':
