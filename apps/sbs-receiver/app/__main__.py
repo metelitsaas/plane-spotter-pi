@@ -14,8 +14,15 @@ def main():
 
     # Get messages from receiver and send to broker
     for message in receiver.get_message():
-        logger.info(f"Received message from aircraft hex id: {message['hex_ident']}")
+        logger.info(f"Received message from aircraft hex_id: {message['hex_ident']}")
 
 
 if __name__ == '__main__':
-    main()
+
+    try:
+        logger.info('Starting')
+        main()
+
+    except Exception as error:
+        logger.exception(error)
+        logger.critical('Critical exception')

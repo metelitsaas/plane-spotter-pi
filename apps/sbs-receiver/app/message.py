@@ -7,25 +7,29 @@ class Message:
     """
     def __init__(self, byte_message: bytes):
         """
+        Initialization
         :param byte_message: received message in byte string
         """
         self._list_message = self._cleaner(byte_message)
         self.valid = self._check_valid()
 
     @staticmethod
-    def _cleaner(byte_message: bytes):
+    def _cleaner(byte_message: bytes) -> list:
         """
         Clean byte message to SBS-1 message format
         :param byte_message: received message in byte string
         :return: list of message fields
         """
-        n_list = byte_message \
-            .decode(DECODE_TYPE) \
-            .split('\n')
-        for n_item in n_list:
-            return n_item.split(",") if len(n_item.split(",")) == 22 else None
+        if byte_message is not b'':
 
-    def _get_field(self, num_field: int):
+            splitted_message = byte_message \
+                .decode(DECODE_TYPE) \
+                .split('\n')
+
+            for message in splitted_message:
+                return message.split(",") if len(message.split(",")) == 22 else None
+
+    def _get_field(self, num_field: int) -> str:
         """
         Get message field from list by position
         :param num_field: number of SBS-1 message field
@@ -33,14 +37,14 @@ class Message:
         """
         return self._list_message[num_field] if self._list_message else ''
 
-    def _check_valid(self):
+    def _check_valid(self) -> bool:
         """
         Check validity of SBS-1 message, messages with empty aircraft hex id are invalid
-        :return: validity
+        :return: validity boolean
         """
         return True if self._get_field(4) not in ['000000', ''] else False
 
-    def get(self):
+    def get(self) -> dict:
         """
         Return SBS-1 formatted message
         :return: message in dictionary format
