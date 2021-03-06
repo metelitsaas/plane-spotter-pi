@@ -1,5 +1,5 @@
 import os
-from utils.logger import logger
+from plane_package.utils.logger import logger
 from receiver import Receiver
 
 
