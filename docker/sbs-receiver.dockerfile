@@ -9,11 +9,11 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Install requirements
-COPY requirements.txt .
+COPY apps/sbs-receiver/requirements.txt .
 RUN pip install -r requirements.txt
 
 # Copy application
-COPY app/ app/
+COPY apps/sbs-receiver/app/ app/
 
 # Run app
 ENV PATH="/opt/venv/bin:$PATH"
