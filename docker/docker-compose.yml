@@ -2,7 +2,7 @@ services:
 
   dump1090:
     build:
-      context: .
+      context: ../
       dockerfile: docker/dump1090.dockerfile
     image: dump1090:1.0
     ports:
@@ -14,12 +14,23 @@ services:
 
   sbs-receiver:
     build:
-      context: .
+      context: ../
       dockerfile: docker/sbs-receiver.dockerfile
     image: sbs-receiver:1.1
     environment:
       - DUMP1090_HOST=dump1090
       - DUMP1090_PORT=30003
+
+  web-server:
+    build:
+      context: ../
+      dockerfile: docker/web-server.dockerfile
+    image: web-server:0.1
+    ports:
+      - 5000:5000
+    environment:
+      - HOST=0.0.0.0
+      - PORT=5000
 
   postgres:
     image: postgres:12.6

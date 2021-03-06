@@ -7,11 +7,12 @@ Infrastructure based on RaspberryPi and configured by ansible playbook-docker-co
 All services set-up by docker-compose:
 1. dump1090 - RTL-SDR decoder (https://github.com/malcolmrobb/dump1090).
 2. sbs-receiver - parses received SBS-1 messages
+3. web-server - saves messages to database and provides access
+4. postgres - object-relational database for data storage
 
 ### Building notes
 ```
 scp -r docker admin@192.168.0.18:/home/admin
 scp -r apps admin@192.168.0.18:/home/admin
-
-docker-compose -f docker/docker-compose.yml up -d
+ssh admin@192.168.0.18 docker-compose -f docker/docker-compose.yml up -d
 ```
