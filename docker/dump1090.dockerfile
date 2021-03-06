@@ -18,13 +18,8 @@ RUN git clone https://github.com/malcolmrobb/dump1090 \
     && cd dump1090 \
     && make -j 4
 
-# web overview
-#EXPOSE 8080
-
 # ports for FlightAware etc
 EXPOSE 30003
-#EXPOSE 30005
-#EXPOSE 30104
 
 # Update your lat/lon values.
 WORKDIR /root/dump1090
