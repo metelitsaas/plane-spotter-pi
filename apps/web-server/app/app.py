@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from plane_package.utils.logger import logger
+from package.utils.logger import logger
 from main import main as main_blueprint
 from api_1_0 import api as api_1_0_blueprint
 

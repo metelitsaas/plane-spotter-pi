@@ -21,7 +21,7 @@ RUN pip install -r requirements.txt
 
 # Copy application
 COPY apps/web-server/app/ app/
-COPY apps/plane_package/ app/plane_package
+COPY apps/package/ app/package
 
 # Create user
 RUN useradd user

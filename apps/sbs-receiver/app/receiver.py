@@ -1,7 +1,7 @@
 import socket
 import time
 from functools import wraps
-from plane_package.utils.logger import logger
+from package.utils.logger import logger
 from message import Message
 
 BUFFER_SIZE = 100

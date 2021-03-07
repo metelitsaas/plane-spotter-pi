@@ -10,7 +10,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 # Copy application
 COPY apps/sbs-receiver/app/ app/
-COPY apps/plane_package/ app/plane_package
+COPY apps/package/ app/package
 
 # Run app
 ENV PATH="/opt/venv/bin:$PATH"
