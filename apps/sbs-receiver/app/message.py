@@ -1,4 +1,9 @@
+import datetime
+from package.utils.logger import logger
+
 DECODE_TYPE = 'utf-8'
+TIME_FORMAT = '%H:%M:%S.%f'
+DATE_FORMAT = '%Y/%m/%d'
 
 
 class Message:
@@ -8,15 +13,36 @@ class Message:
     def __init__(self, byte_message: bytes):
         """
         Initialization
+        Parsing message values by position in list
         :param byte_message: received message in byte string
         """
-        self._list_message = self._cleaner(byte_message)
-        self.valid = self._check_valid()
+        self._list_message = self._parse(byte_message)
+        self.message_type = self._get_message_type(0)
+        self.transmission_type = self._get_digit_value(1)
+        self.session_id = self._get_digit_value(2)
+        self.aircraft_id = self._get_digit_value(3)
+        self.hex_id = self._get_exist_value(4)
+        self.flight_id = self._get_digit_value(5)
+        self.call_sign_nm = self._get_digit_value(10)
+        self.altitude_value = self._get_digit_value(11)
+        self.ground_speed_value = self._get_float_value(12)
+        self.track_value = self._get_float_value(13)
+        self.latitude_value = self._get_float_value(14)
+        self.longitude_value = self._get_float_value(15)
+        self.vertical_rate = self._get_float_value(16)
+        self.squawk_value = self._get_digit_value(17)
+        self.alert_flg = self._get_boolean_value(18)
+        self.emergency_flg = self._get_boolean_value(19)
+        self.spi_flg = self._get_boolean_value(20)
+        self.is_on_ground_flg = self._get_boolean_value(21)
+        self.generation_dttm = self._get_datetime_value(6, 7)
+        self.receive_dttm = self._get_datetime_value(8, 9)
+        self.valid = self._check_validity()
 
     @staticmethod
-    def _cleaner(byte_message: bytes) -> list:
+    def _parse(byte_message: bytes) -> list:
         """
-        Clean byte message to SBS-1 message format
+        Parse byte message to SBS-1 message format
         :param byte_message: received message in byte string
         :return: list of message fields
         """
@@ -27,22 +53,90 @@ class Message:
                 .split('\n')
 
             for message in splitted_message:
-                return message.split(",") if len(message.split(",")) == 22 else None
+                return message.split(",") if len(message.split(",")) == 22 else []
 
-    def _get_field(self, num_field: int) -> str:
+    def _get_message_type(self, position: int) -> str:
         """
-        Get message field from list by position
-        :param num_field: number of SBS-1 message field
-        :return: string of message field
+        Validate message_type value
+        :param position: position of value in list
+        :return: validated value
         """
-        return self._list_message[num_field] if self._list_message else ''
+        if len(self._list_message) > position:
+            if len(self._list_message[position]) == 3:
+                return self._list_message[position]
 
-    def _check_valid(self) -> bool:
+    def _get_digit_value(self, position: int) -> int:
         """
-        Check validity of SBS-1 message, messages with empty aircraft hex id are invalid
-        :return: validity boolean
+        Validate digit value
+        :param position: position of value in list
+        :return: validated value
         """
-        return True if self._get_field(4) not in ['000000', ''] else False
+        if len(self._list_message) > position:
+            if self._list_message[position].isdigit():
+                return int(self._list_message[position])
+
+    def _get_float_value(self, position: int) -> float:
+        """
+        Validate float value
+        :param position: position of value in list
+        :return: validated value
+        """
+        if len(self._list_message) > position:
+            if isinstance(self._list_message[position], float):
+                return float(self._list_message[position])
+
+    def _get_exist_value(self, position: int) -> str:
+        """
+        Validate existing value
+        :param position: position of value in list
+        :return: validated value
+        """
+        if len(self._list_message) > position:
+            return self._list_message[position]
+
+    def _get_boolean_value(self, position: int) -> bool:
+        """
+        Validate boolean value
+        :param position: position of value in list
+        :return: validated value
+        """
+        if len(self._list_message) > position:
+            if self._list_message[position].strip('\r') == '-1':
+                return True
+            elif self._list_message[position].strip('\r') == '0':
+                return False
+
+    def _get_datetime_value(self, date_position: int, time_position: int) -> datetime.datetime:
+        """
+        Validate datetime value
+        :param date_position: position of date value in list
+        :param time_position: position of time value in list
+        :return: validated datetime value
+        """
+        if len(self._list_message) > max(date_position, time_position):
+            time = self._list_message[time_position]
+            date = self._list_message[date_position]
+
+            try:
+
+                time_formatted = datetime.datetime.strptime(time, TIME_FORMAT).time()
+                date_formatted = datetime.datetime.strptime(date, DATE_FORMAT).date()
+
+                return datetime.datetime.combine(date_formatted, time_formatted)
+
+            except ValueError:
+                logger.info(f'Impossible to parse datetime: {date} {time}')
+                pass
+
+    def _check_validity(self) -> bool:
+        """
+        Check validity of the message
+        :return: validity in boolean format
+        """
+        if self.message_type is not None:
+            return True
+        else:
+            return False
 
     def get(self) -> dict:
         """
@@ -50,26 +144,24 @@ class Message:
         :return: message in dictionary format
         """
         return {
-            'message_type': self._get_field(0),
-            'transmission_type': self._get_field(1),
-            'session_id': self._get_field(2),
-            'aircraft_id': self._get_field(3),
-            'hex_ident': self._get_field(4),
-            'flight_id': self._get_field(5),
-            'date_message_gen': self._get_field(6),
-            'time_message_gen': self._get_field(7),
-            'date_message_log': self._get_field(8),
-            'time_message_log': self._get_field(9),
-            'call_sign': self._get_field(10),
-            'altitude': self._get_field(11),
-            'ground_speed': self._get_field(12),
-            'track': self._get_field(13),
-            'latitude': self._get_field(14),
-            'longitude': self._get_field(15),
-            'vertical_rate': self._get_field(16),
-            'squawk': self._get_field(17),
-            'alert': self._get_field(18),
-            'emergency': self._get_field(19),
-            'spi': self._get_field(20),
-            'is_on_ground': self._get_field(21).strip('\r')
+            'message_type': self.message_type,
+            'transmission_type': self.transmission_type,
+            'session_id': self.session_id,
+            'aircraft_id': self.aircraft_id,
+            'hex_id': self.hex_id,
+            'flight_id': self.flight_id,
+            'call_sign_nm': self.call_sign_nm,
+            'altitude_value': self.altitude_value,
+            'ground_speed_value': self.ground_speed_value,
+            'track_value': self.track_value,
+            'latitude_value': self.latitude_value,
+            'longitude_value': self.longitude_value,
+            'vertical_rate': self.vertical_rate,
+            'squawk_value': self.squawk_value,
+            'alert_flg': self.alert_flg,
+            'emergency_flg': self.emergency_flg,
+            'spi_flg': self.spi_flg,
+            'is_on_ground_flg': self.is_on_ground_flg,
+            'generation_dttm': self.generation_dttm,
+            'receive_dttm': self.receive_dttm
         }

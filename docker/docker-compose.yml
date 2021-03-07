@@ -16,10 +16,12 @@ services:
     build:
       context: ../
       dockerfile: docker/sbs-receiver.dockerfile
-    image: sbs-receiver:1.1
+    image: sbs-receiver:1.2
     environment:
       - DUMP1090_HOST=dump1090
       - DUMP1090_PORT=30003
+      - WEBSERVER_HOST=web-server
+      - WEBSERVER_PORT=5000
 
   web-server:
     build:

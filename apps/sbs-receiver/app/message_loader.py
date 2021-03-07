@@ -1,13 +1,10 @@
 import json
 import requests
 import datetime
-import time
 from functools import wraps
 from requests import ReadTimeout, ConnectionError, HTTPError
 from package.utils.logger import logger
 from receiver import Receiver
-
-RECONNECT_PERIOD = 1
 
 
 def exception_handler(function):
@@ -18,19 +15,17 @@ def exception_handler(function):
     """
     @wraps(function)
     def wrapper(self, *method_args, **method_kwargs):
-        while True:
 
-            try:
-                return function(self, *method_args, **method_kwargs)
+        try:
+            return function(self, *method_args, **method_kwargs)
 
-            except (ReadTimeout, ConnectionError, HTTPError) as error:
-                logger.warning(error)
-                time.sleep(RECONNECT_PERIOD)
+        except (ReadTimeout, ConnectionError, HTTPError) as error:
+            logger.warning(error)
 
-            except Exception as error:
-                logger.exception(error)
-                logger.warning('Unhandled exception')
-                raise
+        except Exception as error:
+            logger.exception(error)
+            logger.warning('Unhandled exception')
+            raise
 
     return wrapper
 
@@ -54,7 +49,6 @@ class MessageLoader:
         Gets messages from receiver and loads it to web-server by API
         """
         for message in self._receiver.get_message():
-            logger.info(f"Received message from aircraft hex_id: {message['hex_ident']}")
             message_ser = json.dumps(message, default=self._datetime_handler)
             self._send_message(message_ser)
 
@@ -64,7 +58,7 @@ class MessageLoader:
         Post message at web-server endpoint
         :param message: serialized message
         """
-        url = f"http://{self._webserver_host}:{self._webserver_port}/sbs-message"
+        url = f"http://{self._webserver_host}:{self._webserver_port}/api/v1/sbs-message"
         content = {'Content-Type': 'application/json'}
 
         response = requests.post(url, data=message, headers=content)
