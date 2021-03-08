@@ -7,7 +7,9 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Install dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+        python3-psycopg2 \
         libgtk2.0-dev \
+        libpq-dev \
         gcc && \
     apt-get clean
 
