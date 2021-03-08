@@ -36,7 +36,7 @@ class Message:
         self.spi_flg = self._get_boolean_value(20)
         self.is_on_ground_flg = self._get_boolean_value(21)
         self.generation_dttm = self._get_datetime_value(6, 7)
-        self.receive_dttm = self._get_datetime_value(8, 9)
+        self.received_dttm = self._get_datetime_value(8, 9)
         self.valid = self._check_validity()
 
     @staticmethod
@@ -163,5 +163,5 @@ class Message:
             'spi_flg': self.spi_flg,
             'is_on_ground_flg': self.is_on_ground_flg,
             'generation_dttm': self.generation_dttm,
-            'receive_dttm': self.receive_dttm
+            'received_dttm': self.received_dttm
         }

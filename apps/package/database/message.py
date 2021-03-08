@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Numeric, Float, String, DateTime, Boolean
+from sqlalchemy import Column, Numeric, Integer, String, DateTime, Boolean
 from package.database.base import Base
 
 
@@ -6,35 +6,35 @@ class Message(Base):
     """
     Table message
     """
-    __table__ = 'message'
+    __tablename__ = 'message'
 
-    message_id = Column(Numeric, primary_key=True, nullable=False)
+    message_id = Column(Integer, primary_key=True, nullable=False)
     message_type = Column(String, nullable=False)
-    transmission_type = Column(String)
-    session_id = Column(Numeric)
-    aircraft_id = Column(Numeric)
+    transmission_type = Column(Integer)
+    session_id = Column(Integer)
+    aircraft_id = Column(Integer)
     hex_id = Column(String)
-    flight_id = Column(Numeric)
-    call_sign_nm = Column(String)
-    altitude_value = Column(Numeric)
+    flight_id = Column(Integer)
+    call_sign_nm = Column(Integer)
+    altitude_value = Column(Integer)
     ground_speed_value = Column(Numeric)
     track_value = Column(Numeric)
-    latitude_value = Column(Float)
-    longitude_value = Column(Float)
-    vertical_rate_value = Column(Float)
-    squawk_value = Column(Numeric)
+    latitude_value = Column(Numeric)
+    longitude_value = Column(Numeric)
+    vertical_rate_value = Column(Numeric)
+    squawk_value = Column(Integer)
     alert_flg = Column(Boolean)
     emergency_flg = Column(Boolean)
     spi_flg = Column(Boolean)
     is_on_ground_flg = Column(Boolean)
     generation_dttm = Column(DateTime)
-    receive_dttm = Column(DateTime)
+    received_dttm = Column(DateTime)
     creation_dttm = Column(DateTime)
 
     def __init__(self, message_id, message_type, transmission_type, session_id, aircraft_id,
                  hex_id, flight_id, call_sign_nm, altitude_value, ground_speed_value, track_value,
                  latitude_value, longitude_value, vertical_rate, squawk_value, alert_flg, emergency_flg,
-                 spi_flg, is_on_ground_flg, generation_dttm, receive_dttm, creation_dttm):
+                 spi_flg, is_on_ground_flg, generation_dttm, received_dttm, creation_dttm):
         self.message_id = message_id
         self.message_type = message_type
         self.transmission_type = transmission_type
@@ -55,5 +55,5 @@ class Message(Base):
         self.spi_flg = spi_flg
         self.is_on_ground_flg = is_on_ground_flg
         self.generation_dttm = generation_dttm
-        self.receive_dttm = receive_dttm
+        self.received_dttm = received_dttm
         self.creation_dttm = creation_dttm
