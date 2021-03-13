@@ -1,50 +1,22 @@
 import json
-import datetime
-from functools import wraps
+from abc import ABC
 import requests
-from requests import ReadTimeout, HTTPError
-from package.utils.logger import logger
+from package.utils.api_loader import ApiLoader
 from receiver import Receiver
 
 
-def exception_handler(function):
-    """
-    Request exception handler
-    :param function: function to wrap
-    :return: wrapped function
-    """
-    @wraps(function)
-    def wrapper(self, *method_args, **method_kwargs):
-
-        try:
-            return function(self, *method_args, **method_kwargs)
-
-        except (ReadTimeout, requests.ConnectionError, HTTPError) as error:
-            logger.warning(error)
-
-            return None
-
-        except Exception as error:
-            logger.exception(error)
-            logger.warning('Unhandled exception')
-            raise
-
-    return wrapper
-
-
-class MessageLoader:
+class MessageLoader(ApiLoader, ABC):
     """
     Loads SBS-1 messages to web-server
     """
-    def __init__(self, receiver_params: dict, webserver_params: dict):
+    def __init__(self, params: dict, receiver_params: dict):
         """
         Initialization
+        :param params: web-server connection parameters
         :param receiver_params: receiver connection parameters
-        :param webserver_params: web-server connection parameters
         """
+        super().__init__(params)
         self._receiver = Receiver(receiver_params['host'], receiver_params['port'])
-        self._webserver_host = webserver_params['host']
-        self._webserver_port = webserver_params['port']
 
     def run(self) -> None:
         """
@@ -54,26 +26,14 @@ class MessageLoader:
             message_ser = json.dumps(message, default=self._datetime_handler)
             self._send_message(message_ser)
 
-    @exception_handler
+    @ApiLoader._exception_handler
     def _send_message(self, message: str) -> None:
         """
         Post message at web-server endpoint
         :param message: serialized message
         """
-        url = f"http://{self._webserver_host}:{self._webserver_port}/api/v1/sbs-message"
+        url = f"http://{self._host}:{self._port}/api/v1/sbs-message"
         content = {'Content-Type': 'application/json'}
 
         response = requests.post(url, data=message, headers=content)
         response.raise_for_status()
-
-    @staticmethod
-    def _datetime_handler(value) -> str:
-        """
-        Wrap datatime values to ISO format
-        :param value: value to check
-        :return: wrapped value
-        """
-        if isinstance(value, datetime.datetime):
-            return value.isoformat()
-
-        return str(value)
