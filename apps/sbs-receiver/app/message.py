@@ -24,12 +24,12 @@ class Message:
         self.aircraft_id = self._get_digit_value(3)
         self.hex_id = self._get_exist_value(4)
         self.flight_id = self._get_digit_value(5)
-        self.call_sign_nm = self._get_digit_value(10)
+        self.call_sign_nm = self._get_exist_value(10)
         self.altitude_value = self._get_digit_value(11)
         self.ground_speed_value = self._get_float_value(12)
         self.track_value = self._get_float_value(13)
-        self.latitude_value = self._get_float_value(14)
-        self.longitude_value = self._get_float_value(15)
+        self.latitude_value = self._get_float_value(14)  # TODO: Check, always null
+        self.longitude_value = self._get_float_value(15)  # TODO: Check, always null
         self.vertical_rate = self._get_float_value(16)
         self.squawk_value = self._get_digit_value(17)
         self.alert_flg = self._get_boolean_value(18)
@@ -82,10 +82,11 @@ class Message:
         """
         if len(self._list_message) > position:
 
-            if self._list_message[position].isdigit():
+            try:
                 return int(self._list_message[position])
 
-            return None
+            except ValueError:
+                return None
 
         return None
 
@@ -97,10 +98,11 @@ class Message:
         """
         if len(self._list_message) > position:
 
-            if isinstance(self._list_message[position], float):
+            try:
                 return float(self._list_message[position])
 
-            return None
+            except ValueError:
+                return None
 
         return None
 
@@ -111,7 +113,11 @@ class Message:
         :return: validated value
         """
         if len(self._list_message) > position:
-            return self._list_message[position]
+
+            if self._list_message[position].strip() != '':
+                return self._list_message[position].strip()
+
+            return None
 
         return None
 
