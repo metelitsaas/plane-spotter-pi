@@ -1,14 +1,21 @@
 import os
 import telebot
 from package.utils.logger import logger
-from functions import *
+from webserver_loader import WebserverLoader
 
 
-# Bot environment variable
+# Environment variables
 api_token = os.environ['API_TOKEN']
+webserver_params = {
+    'host': os.environ['WEBSERVER_HOST'],
+    'port': os.environ['WEBSERVER_PORT']
+}
 
 # Bot configuration
 bot = telebot.TeleBot(api_token)
+
+# Web-server API loader
+webserver_loader = WebserverLoader(webserver_params)
 
 
 @bot.message_handler(commands=['bot'])
@@ -29,11 +36,11 @@ def bot_handler(message):
 def callback_worker(call):
 
     if call.data == 'status':
-        answer = get_status()
+        answer = webserver_loader.get_status()
         bot.send_message(call.message.chat.id, answer)
 
     elif call.data == 'emergency':
-        answer = get_emergency()
+        answer = webserver_loader.get_emergency()
         bot.send_message(call.message.chat.id, answer)
 
 
