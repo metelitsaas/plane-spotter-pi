@@ -17,6 +17,5 @@ COPY apps/sbs-receiver/app/ app/
 COPY apps/package/ app/package
 
 # Run app
-ENV PATH="/opt/venv/bin:$PATH"
 ENV PYTHONPATH="/app"
 CMD ["python", "app"]
