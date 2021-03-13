@@ -9,6 +9,7 @@ All services set-up by docker-compose:
 2. sbs-receiver - parses received SBS-1 messages
 3. web-server - saves messages to database and provides access
 4. postgres - object-relational database for data storage
+5. telegram-bot - client's interface
 
 ### Building notes
 ```
