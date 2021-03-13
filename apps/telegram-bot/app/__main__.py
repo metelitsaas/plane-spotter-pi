@@ -37,7 +37,12 @@ def callback_worker(call):
 
     if call.data == 'status':
         answer = webserver_loader.get_status()
-        bot.send_message(call.message.chat.id, answer)
+
+        if answer:
+            bot.send_message(call.message.chat.id, answer)
+
+        else:
+            bot.send_message(call.message.chat.id, 'Server error')
 
     elif call.data == 'emergency':
         answer = webserver_loader.get_emergency()
