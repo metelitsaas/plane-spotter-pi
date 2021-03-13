@@ -62,7 +62,7 @@ class Receiver:
                 logger.info(f"Connected to {self._host}:{self._port}")
                 break
 
-            except socket.error as error:
+            except (socket.error, ConnectionResetError) as error:
                 logger.warning(error)
                 logger.warning('Socket error, reconnecting')
                 time.sleep(RECONNECT_PERIOD)
