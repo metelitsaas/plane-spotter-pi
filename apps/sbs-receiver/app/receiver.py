@@ -21,7 +21,7 @@ def exception_handler(function):
             try:
                 return function(self, *method_args, **method_kwargs)
 
-            except socket.error as error:
+            except (socket.error, ConnectionResetError) as error:
                 logger.warning(error)
                 self._disconnect()
                 self._connect()
