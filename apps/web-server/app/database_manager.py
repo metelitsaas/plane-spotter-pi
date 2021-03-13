@@ -53,13 +53,14 @@ class DatabaseManager:
         Initialization
         :param params: database parameters
         """
-        self._engine = create_engine('postgresql+psycopg2://%(user)s:%(password)s@%(host)s:%(port)s/%(db)s' % {
-            'user': params['user'],
-            'password': params['password'],
-            'host': params['host'],
-            'port': params['port'],
-            'db': params['db']
-        })
+        self._engine = create_engine(
+            'postgresql+psycopg2://%(user)s:%(password)s@%(host)s:%(port)s/%(db)s' % {
+                'user': params['user'],
+                'password': params['password'],
+                'host': params['host'],
+                'port': params['port'],
+                'db': params['db']
+            })
         self._session = sessionmaker(bind=self._engine)()
 
     @transaction_handler

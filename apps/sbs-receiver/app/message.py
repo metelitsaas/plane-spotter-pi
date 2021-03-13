@@ -1,4 +1,5 @@
 import datetime
+from typing import Optional
 from package.utils.logger import logger
 
 DECODE_TYPE = 'utf-8'
@@ -46,7 +47,7 @@ class Message:
         :param byte_message: received message in byte string
         :return: list of message fields
         """
-        if byte_message is not b'':
+        if byte_message != b'':
 
             splitted_message = byte_message \
                 .decode(DECODE_TYPE) \
@@ -55,37 +56,55 @@ class Message:
             for message in splitted_message:
                 return message.split(",") if len(message.split(",")) == 22 else []
 
-    def _get_message_type(self, position: int) -> str:
+        else:
+            return []
+
+    def _get_message_type(self, position: int) -> Optional[str]:
         """
         Validate message_type value
         :param position: position of value in list
         :return: validated value
         """
         if len(self._list_message) > position:
+
             if len(self._list_message[position]) == 3:
                 return self._list_message[position]
 
-    def _get_digit_value(self, position: int) -> int:
+            return None
+
+        return None
+
+    def _get_digit_value(self, position: int) -> Optional[int]:
         """
         Validate digit value
         :param position: position of value in list
         :return: validated value
         """
         if len(self._list_message) > position:
+
             if self._list_message[position].isdigit():
                 return int(self._list_message[position])
 
-    def _get_float_value(self, position: int) -> float:
+            return None
+
+        return None
+
+    def _get_float_value(self, position: int) -> Optional[float]:
         """
         Validate float value
         :param position: position of value in list
         :return: validated value
         """
         if len(self._list_message) > position:
+
             if isinstance(self._list_message[position], float):
                 return float(self._list_message[position])
 
-    def _get_exist_value(self, position: int) -> str:
+            return None
+
+        return None
+
+    def _get_exist_value(self, position: int) -> Optional[str]:
         """
         Validate existing value
         :param position: position of value in list
@@ -94,19 +113,27 @@ class Message:
         if len(self._list_message) > position:
             return self._list_message[position]
 
-    def _get_boolean_value(self, position: int) -> bool:
+        return None
+
+    def _get_boolean_value(self, position: int) -> Optional[bool]:
         """
         Validate boolean value
         :param position: position of value in list
         :return: validated value
         """
         if len(self._list_message) > position:
+
             if self._list_message[position].strip('\r') == '-1':
                 return True
-            elif self._list_message[position].strip('\r') == '0':
+            if self._list_message[position].strip('\r') == '0':
                 return False
 
-    def _get_datetime_value(self, date_position: int, time_position: int) -> datetime.datetime:
+            return None
+
+        return None
+
+    def _get_datetime_value(self, date_position: int,
+                            time_position: int) -> Optional[datetime.datetime]:
         """
         Validate datetime value
         :param date_position: position of date value in list
@@ -126,7 +153,9 @@ class Message:
 
             except ValueError:
                 logger.info(f'Impossible to parse datetime: {date} {time}')
-                pass
+                return None
+
+        return None
 
     def _check_validity(self) -> bool:
         """
@@ -135,8 +164,8 @@ class Message:
         """
         if self.message_type is not None:
             return True
-        else:
-            return False
+
+        return False
 
     def get(self) -> dict:
         """

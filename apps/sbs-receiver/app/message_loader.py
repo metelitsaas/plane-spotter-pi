@@ -1,8 +1,8 @@
 import json
-import requests
 import datetime
 from functools import wraps
-from requests import ReadTimeout, ConnectionError, HTTPError
+import requests
+from requests import ReadTimeout, HTTPError
 from package.utils.logger import logger
 from receiver import Receiver
 
@@ -19,8 +19,10 @@ def exception_handler(function):
         try:
             return function(self, *method_args, **method_kwargs)
 
-        except (ReadTimeout, ConnectionError, HTTPError) as error:
+        except (ReadTimeout, requests.ConnectionError, HTTPError) as error:
             logger.warning(error)
+
+            return None
 
         except Exception as error:
             logger.exception(error)
@@ -73,5 +75,5 @@ class MessageLoader:
         """
         if isinstance(value, datetime.datetime):
             return value.isoformat()
-        else:
-            return str(value)
+
+        return str(value)
