@@ -15,7 +15,7 @@ class Message(Base):
     aircraft_id = Column(Integer)
     hex_id = Column(String)
     flight_id = Column(Integer)
-    call_sign_nm = Column(Integer)
+    call_sign_nm = Column(String)
     altitude_value = Column(Integer)
     ground_speed_value = Column(Numeric)
     track_value = Column(Numeric)

@@ -8,7 +8,7 @@ CREATE TABLE message (
     aircraft_id integer,
     hex_id varchar(10),
     flight_id integer,
-    call_sign_nm integer,
+    call_sign_nm varchar(10),
     altitude_value integer,
     ground_speed_value numeric,
     track_value numeric,
