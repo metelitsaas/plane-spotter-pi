@@ -16,7 +16,7 @@ services:
     build:
       context: ../
       dockerfile: docker/sbs-receiver.dockerfile
-    image: sbs-receiver:1.3
+    image: sbs-receiver:1.4
     environment:
       - DUMP1090_HOST=dump1090
       - DUMP1090_PORT=30003
