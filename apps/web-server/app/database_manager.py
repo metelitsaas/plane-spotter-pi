@@ -1,8 +1,9 @@
 import time
 import datetime
 from functools import wraps
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import OperationalError, SQLAlchemyError
 from package.utils.logger import logger
 from package.database.message_id_seq import MessageIdSeq
@@ -75,6 +76,18 @@ class DatabaseManager:
         self._insert_message(message_id, message)
 
         return message_id
+
+    @transaction_handler
+    def get_last_message(self) -> datetime.datetime:
+        """
+        Get timestamp of last message
+        :return: received timestamp
+        """
+        try:
+            return self._session.query(func.max(Message.creation_dttm)).one()[0]
+
+        except NoResultFound:
+            logger.warning("Can't get timestamp of last message")
 
     def _create_message_id_seq(self) -> int:
         """
