@@ -33,7 +33,7 @@ class Message(Base):
 
     def __init__(self, message_id, message_type, transmission_type, session_id, aircraft_id,
                  hex_id, flight_id, call_sign_nm, altitude_value, ground_speed_value, track_value,
-                 latitude_value, longitude_value, vertical_rate, squawk_value, alert_flg, emergency_flg,
+                 latitude_value, longitude_value, vertical_rate_value, squawk_value, alert_flg, emergency_flg,
                  spi_flg, is_on_ground_flg, generation_dttm, received_dttm, creation_dttm):
         self.message_id = message_id
         self.message_type = message_type
@@ -48,7 +48,7 @@ class Message(Base):
         self.track_value = track_value
         self.latitude_value = latitude_value
         self.longitude_value = longitude_value
-        self.vertical_rate = vertical_rate
+        self.vertical_rate_value = vertical_rate_value
         self.squawk_value = squawk_value
         self.alert_flg = alert_flg
         self.emergency_flg = emergency_flg
