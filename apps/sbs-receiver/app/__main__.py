@@ -18,7 +18,7 @@ def main():
     }
 
     # Run message loader
-    message_loader = MessageLoader(dump1090_params, webserver_params)
+    message_loader = MessageLoader(webserver_params, dump1090_params)
     message_loader.run()
 
 
