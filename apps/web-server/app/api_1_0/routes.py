@@ -30,15 +30,23 @@ def load_message():
     return make_response(jsonify({'message_id': message_id}), 201)
 
 
-@api.route('/status', methods=['GET'])
-def get_status():
+@api.route('/statistics', methods=['GET'])
+def get_statistics():
     """
-    Get status of system
+    Get statistics of system
+    """
+    message = database_manager.get_statistics()
+    message_ser = json.dumps(message, default=datetime_handler)
+
+    return make_response(message_ser, 200)
+
+
+@api.route('/last_message', methods=['GET'])
+def get_last_message():
+    """
+    Get last message info
     """
     message = database_manager.get_last_message()
-
-    if 'hex_id' not in message:
-        abort(400)
-
     message_ser = json.dumps(message, default=datetime_handler)
+
     return make_response(message_ser, 200)

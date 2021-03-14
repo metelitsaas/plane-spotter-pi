@@ -1,7 +1,7 @@
 import time
 import datetime
 from functools import wraps
-from sqlalchemy import create_engine, desc
+from sqlalchemy import create_engine, desc, func, distinct, case, true
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import OperationalError, SQLAlchemyError
@@ -78,10 +78,37 @@ class DatabaseManager:
         return message_id
 
     @transaction_handler
+    def get_statistics(self) -> dict:
+        """
+        Get full statistics info
+        :return: answer dict
+        """
+        try:
+            answer = self._session.query(
+                func.count(Message.message_id),
+                func.count(distinct(Message.hex_id)),
+                func.sum(
+                    case(
+                        [(Message.emergency_flg == true(), 1)],
+                        else_=0
+                    )
+                )
+            ).one()
+
+            return {
+                'message_cnt': answer[0],
+                'hex_id_dist_cnt': answer[1],
+                'emergency_cnt': answer[2]
+            }
+
+        except NoResultFound:
+            logger.warning("Answer set it empty")
+
+    @transaction_handler
     def get_last_message(self) -> dict:
         """
-        Get timestamp of last message
-        :return: received timestamp
+        Get last message info
+        :return: answer dict
         """
         try:
             answer = self._session.query(
