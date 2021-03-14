@@ -1,9 +1,10 @@
-import datetime
 from abc import ABCMeta
 from functools import wraps
 from requests import ReadTimeout, HTTPError
 from requests.exceptions import ConnectionError
 from package.utils.logger import logger
+
+TIMESTAMP_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
 class ApiLoader(metaclass=ABCMeta):
@@ -42,15 +43,3 @@ class ApiLoader(metaclass=ABCMeta):
                 raise
 
         return wrapper
-
-    @staticmethod
-    def _datetime_handler(value) -> str:
-        """
-        Wrap datatime values to ISO format
-        :param value: value to check
-        :return: wrapped value
-        """
-        if isinstance(value, datetime.datetime):
-            return value.isoformat()
-
-        return str(value)

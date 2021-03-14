@@ -3,10 +3,13 @@ import datetime
 TIMESTAMP_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
-def datetime_to_string(timestamp: datetime.datetime) -> str:
+def datetime_handler(value) -> str:
     """
-    Transform datatime to string
-    :param timestamp: timestamp in datetime format
-    :return: timestamp in string format
+    Wrap datatime values to ISO format
+    :param value: value to check
+    :return: wrapped value
     """
-    return timestamp.strftime(TIMESTAMP_FORMAT)
+    if isinstance(value, datetime.datetime):
+        return value.strftime(TIMESTAMP_FORMAT)
+
+    return str(value)
