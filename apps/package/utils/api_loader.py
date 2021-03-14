@@ -1,8 +1,8 @@
 import datetime
 from abc import ABCMeta
 from functools import wraps
-import requests
 from requests import ReadTimeout, HTTPError
+from requests.exceptions import ConnectionError
 from package.utils.logger import logger
 
 
@@ -31,7 +31,7 @@ class ApiLoader(metaclass=ABCMeta):
             try:
                 return function(self, *method_args, **method_kwargs)
 
-            except (ReadTimeout, requests.ConnectionError, HTTPError) as error:
+            except (ReadTimeout, ConnectionError, HTTPError) as error:
                 logger.warning(error)
 
                 return None
