@@ -15,7 +15,7 @@ class WebserverLoader(ApiLoader, ABC):
         super().__init__(params)
 
     @ApiLoader._exception_handler
-    def get_status(self) -> str:
+    def get_status(self) -> dict:
         """
         Get system status
         :return : answer message
@@ -26,7 +26,7 @@ class WebserverLoader(ApiLoader, ABC):
         response = requests.get(url, headers=content)
         response.raise_for_status()
 
-        return response.text
+        return response.json()
 
     @ApiLoader._exception_handler
     def get_emergency(self) -> str:

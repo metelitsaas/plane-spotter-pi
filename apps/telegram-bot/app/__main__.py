@@ -38,11 +38,22 @@ def callback_worker(call):
     if call.data == 'status':
         answer = webserver_loader.get_status()
 
-        if answer:
-            bot.send_message(call.message.chat.id, answer)
+        if answer is None:
+            message = 'ERROR: Empty message'
+            bot.send_message(call.message.chat.id, message)
+
+        elif 'error' in answer:
+            message = 'ERROR: Server error'
+            bot.send_message(call.message.chat.id, message)
 
         else:
-            bot.send_message(call.message.chat.id, 'Server error')
+            message = f"""
+            Last received message:
+            ID: {answer['hex_id']}
+            Call Sign: {answer['call_sign_nm']}
+            Date/Time: {answer['creation_dttm']}
+            """
+            bot.send_message(call.message.chat.id, message)
 
     elif call.data == 'emergency':
         answer = webserver_loader.get_emergency()
