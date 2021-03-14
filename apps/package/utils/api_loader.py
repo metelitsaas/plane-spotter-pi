@@ -35,7 +35,7 @@ class ApiLoader(metaclass=ABCMeta):
             except (ReadTimeout, ConnectionError, HTTPError) as error:
                 logger.warning(error)
 
-                return None
+                return {'error': f'{error}'}
 
             except Exception as error:
                 logger.exception(error)
