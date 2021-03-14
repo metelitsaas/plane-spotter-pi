@@ -15,13 +15,13 @@ class WebserverLoader(ApiLoader, ABC):
         super().__init__(params)
 
     @ApiLoader._exception_handler
-    def get_status(self) -> dict:
+    def get_statistics(self) -> dict:
         """
-        Get system status
+        Get statistics info
         :return : answer message
         """
-        url = f"http://{self._host}:{self._port}/api/v1/status"
-        content = {'Content-Type': 'text/plain'}
+        url = f"http://{self._host}:{self._port}/api/v1/statistics"
+        content = {'Content-Type': 'application/json'}
 
         response = requests.get(url, headers=content)
         response.raise_for_status()
@@ -29,9 +29,15 @@ class WebserverLoader(ApiLoader, ABC):
         return response.json()
 
     @ApiLoader._exception_handler
-    def get_emergency(self) -> str:
+    def get_last_message(self) -> dict:
         """
-        Get emergency messages
+        Get last message info
         :return : answer message
         """
-        return "PLUG"
+        url = f"http://{self._host}:{self._port}/api/v1/last_message"
+        content = {'Content-Type': 'application/json'}
+
+        response = requests.get(url, headers=content)
+        response.raise_for_status()
+
+        return response.json()

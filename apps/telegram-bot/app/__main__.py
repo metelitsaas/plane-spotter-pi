@@ -23,11 +23,11 @@ def bot_handler(message):
 
     keyboard = telebot.types.InlineKeyboardMarkup()
 
-    key_status = telebot.types.InlineKeyboardButton(text='status', callback_data='status')
+    key_status = telebot.types.InlineKeyboardButton(text='statistics', callback_data='statistics')
     keyboard.add(key_status)
 
-    key_emergency = telebot.types.InlineKeyboardButton(text='emergency', callback_data='emergency')
-    keyboard.add(key_emergency)
+    key_status = telebot.types.InlineKeyboardButton(text='last message', callback_data='last_message')
+    keyboard.add(key_status)
 
     bot.send_message(message.chat.id, 'Choose action:', reply_markup=keyboard)
 
@@ -35,8 +35,29 @@ def bot_handler(message):
 @bot.callback_query_handler(func=lambda call: True)
 def callback_worker(call):
 
-    if call.data == 'status':
-        answer = webserver_loader.get_status()
+    # TODO: Refactor callback choice
+    if call.data == 'statistics':
+        answer = webserver_loader.get_statistics()
+
+        if answer is None:
+            message = 'ERROR: Empty message'
+            bot.send_message(call.message.chat.id, message)
+
+        elif 'error' in answer:
+            message = 'ERROR: Server error'
+            bot.send_message(call.message.chat.id, message)
+
+        else:
+            message = f"""
+            Statistics:
+            All messages: {answer['message_cnt']}
+            Unique planes: {answer['hex_id_dist_cnt']}
+            Emergency messages: {answer['emergency_cnt']}
+            """
+            bot.send_message(call.message.chat.id, message)
+
+    elif call.data == 'last_message':
+        answer = webserver_loader.get_last_message()
 
         if answer is None:
             message = 'ERROR: Empty message'
@@ -54,10 +75,6 @@ def callback_worker(call):
             Date/Time: {answer['creation_dttm']}
             """
             bot.send_message(call.message.chat.id, message)
-
-    elif call.data == 'emergency':
-        answer = webserver_loader.get_emergency()
-        bot.send_message(call.message.chat.id, answer)
 
 
 if __name__ == '__main__':
