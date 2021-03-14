@@ -1,5 +1,6 @@
-from package.utils.functions import datetime_to_string
+import json
 from flask import request, abort, make_response, jsonify
+from package.utils.functions import datetime_handler
 from api_1_0 import api
 from api_1_0 import database_manager
 
@@ -34,11 +35,10 @@ def get_status():
     """
     Get status of system
     """
-    timestamp = database_manager.get_last_message()
+    message = database_manager.get_last_message()
 
-    if timestamp:
-        message = f"Last message received at {datetime_to_string(timestamp)}"
-        return make_response(message, 200)
+    if 'hex_id' not in message:
+        abort(400)
 
-    message = "Can't find message in database"
-    return make_response(message, 200)
+    message_ser = json.dumps(message, default=datetime_handler)
+    return make_response(message_ser, 200)
