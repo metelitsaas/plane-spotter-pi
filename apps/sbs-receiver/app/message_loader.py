@@ -2,6 +2,7 @@ import json
 from abc import ABC
 import requests
 from package.utils.api_loader import ApiLoader
+from package.utils.functions import datetime_handler
 from receiver import Receiver
 
 
@@ -23,7 +24,7 @@ class MessageLoader(ApiLoader, ABC):
         Gets messages from receiver and loads it to web-server by API
         """
         for message in self._receiver.get_message():
-            message_ser = json.dumps(message, default=self._datetime_handler)
+            message_ser = json.dumps(message, default=datetime_handler)
             self._send_message(message_ser)
 
     @ApiLoader._exception_handler
