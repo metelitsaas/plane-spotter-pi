@@ -60,10 +60,15 @@ def callback_worker(call):
 
 if __name__ == '__main__':
 
-    try:
-        logger.info('Starting')
-        bot.polling()
+    while True:
+        try:
+            logger.info('Starting')
+            bot.polling()
 
-    except Exception as error:
-        logger.exception(error)
-        logger.critical('Critical exception')
+        except ConnectionResetError as error:
+            logger.warning(error)
+
+        except Exception as error:
+            logger.exception(error)
+            logger.critical('Critical exception')
+            break
