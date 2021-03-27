@@ -1,6 +1,7 @@
 import os
 import telebot
 from package.utils.logger import logger
+from answers import generate_statistics_message, generate_last_message
 from webserver_loader import WebserverLoader
 
 
@@ -20,13 +21,20 @@ webserver_loader = WebserverLoader(webserver_params)
 
 @bot.message_handler(commands=['bot'])
 def bot_handler(message):
-
+    """
+    Bot keyboard handler
+    :param message: received message
+    """
     keyboard = telebot.types.InlineKeyboardMarkup()
 
-    key_status = telebot.types.InlineKeyboardButton(text='statistics', callback_data='statistics')
+    key_status = telebot.types.InlineKeyboardButton(
+        text='statistics', callback_data='statistics'
+    )
     keyboard.add(key_status)
 
-    key_status = telebot.types.InlineKeyboardButton(text='last message', callback_data='last_message')
+    key_status = telebot.types.InlineKeyboardButton(
+        text='last message', callback_data='last_message'
+    )
     keyboard.add(key_status)
 
     bot.send_message(message.chat.id, 'Choose action:', reply_markup=keyboard)
@@ -34,47 +42,20 @@ def bot_handler(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_worker(call):
+    """
+    Bot response logic
+    :param call: response metadata
+    """
 
-    # TODO: Refactor callback choice
     if call.data == 'statistics':
         answer = webserver_loader.get_statistics()
-
-        if answer is None:
-            message = 'ERROR: Empty message'
-            bot.send_message(call.message.chat.id, message)
-
-        elif 'error' in answer:
-            message = 'ERROR: Server error'
-            bot.send_message(call.message.chat.id, message)
-
-        else:
-            message = f"""
-            Statistics:
-            All messages: {answer['message_cnt']}
-            Unique planes: {answer['hex_id_dist_cnt']}
-            Emergency messages: {answer['emergency_cnt']}
-            """
-            bot.send_message(call.message.chat.id, message)
+        message = generate_statistics_message(answer)
+        bot.send_message(call.message.chat.id, message)
 
     elif call.data == 'last_message':
         answer = webserver_loader.get_last_message()
-
-        if answer is None:
-            message = 'ERROR: Empty message'
-            bot.send_message(call.message.chat.id, message)
-
-        elif 'error' in answer:
-            message = 'ERROR: Server error'
-            bot.send_message(call.message.chat.id, message)
-
-        else:
-            message = f"""
-            Last received message:
-            ID: {answer['hex_id']}
-            Call Sign: {answer['call_sign_nm']}
-            Date/Time: {answer['creation_dttm']}
-            """
-            bot.send_message(call.message.chat.id, message)
+        message = generate_last_message(answer)
+        bot.send_message(call.message.chat.id, message)
 
 
 if __name__ == '__main__':
