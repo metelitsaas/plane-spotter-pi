@@ -168,6 +168,7 @@ class Message:
         Check validity of the message
         :return: validity in boolean format
         """
+        # TODO: Add 000000 of hex_id to invalid value
         if self.message_type is not None:
             return True
 
