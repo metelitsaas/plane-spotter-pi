@@ -84,9 +84,12 @@ class DatabaseManager:
         :return: answer dict
         """
         try:
+            subquery_distinct = self._session.query(distinct(Message.hex_id)).subquery()
+            subquery_count = self._session.query(func.count(subquery_distinct)).subquery()
+
             answer = self._session.query(
                 func.count(Message.message_id),
-                func.count(distinct(Message.hex_id)),
+                subquery_count,
                 func.sum(
                     case(
                         [(Message.emergency_flg == true(), 1)],

@@ -25,3 +25,4 @@ CREATE TABLE message (
     creation_dttm timestamp,
 	CONSTRAINT message_pkey PRIMARY KEY (message_id)
 );
+CREATE INDEX message_creation_dttm_idx ON message (creation_dttm desc);
