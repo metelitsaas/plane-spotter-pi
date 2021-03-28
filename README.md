@@ -1,5 +1,5 @@
 ## plane-spotter-pi
-The application receives SBS-1 messages by RTL-SDR. 
+The application receives SBS-1 messages by RTL-SDR. Clients interface is realised by Telegram Bot.
 Infrastructure based on RaspberryPi and configured by ansible playbook-docker-compose.yml 
 (https://github.com/metelitsaas/ansible-rpi-k8s)
 
