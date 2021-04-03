@@ -17,3 +17,32 @@ scp -r docker admin@192.168.0.18:/home/admin
 scp -r apps admin@192.168.0.18:/home/admin
 ssh admin@192.168.0.18 docker-compose -f docker/docker-compose.yml up -d
 ```
+
+### Bot commands
+#### 1. Get statistics
+Command:
+```
+/statistics
+```
+
+Sample answer:
+```
+Statistics:
+    All messages: 1639762
+    Unique planes: 584
+    Emergency messages: 0
+```
+
+#### 2. Get last message
+Command:
+```
+/last_message
+```
+
+Sample answer:
+```
+Last message:
+    Plane ID: 42495A
+    Call sign: None
+    UTC Timestamp: 2021-03-28 13:40:59
+```
