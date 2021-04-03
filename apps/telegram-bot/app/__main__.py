@@ -1,6 +1,6 @@
 import os
 import telebot
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError, ReadTimeout
 from package.utils.logger import logger
 from webserver_loader import WebserverLoader
 
@@ -62,7 +62,7 @@ def send_message(chat_id, message) -> None:
             bot.send_message(chat_id, message)
             break
 
-        except ConnectionError:
+        except (ConnectionError, ReadTimeout):
             logger.warning('Connection error, trying again')
 
 
